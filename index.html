@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>My Website</title>
+</head>
+<body>
+
+<h1>留言板</h1>
+
+<input id="input">
+<button onclick="addMessage()">
+  新增
+</button>
+
+<ul id="list"></ul>
+
+<script>
+
+const API = 'http://127.0.0.1:8000'
+
+async function loadMessages() {
+
+  const res = await fetch(`${API}/messages`)
+
+  const data = await res.json()
+
+  const list = document.getElementById('list')
+
+  list.innerHTML = ''
+
+  data.forEach(m => {
+
+    list.innerHTML += `
+      <li>${m.text}</li>
+    `
+  })
+}
+
+async function addMessage() {
+
+  const input = document.getElementById('input')
+
+  await fetch(
+    `${API}/messages/${input.value}`,
+    {
+      method: 'POST'
+    }
+  )
+
+  input.value = ''
+
+  loadMessages()
+}
+
+loadMessages()
+
+</script>
+
+</body>
+</html>
