@@ -1,59 +1,129 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <title>My Website</title>
+<meta charset="UTF-8">
+<title>留言板 Pro</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #0f172a;
+  color: white;
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+.container {
+  width: 520px;
+}
+
+h1 {
+  text-align: center;
+}
+
+.input-area {
+  display: flex;
+  gap: 10px;
+}
+
+input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+}
+
+button {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  background: #38bdf8;
+  cursor: pointer;
+  color: black;
+  font-weight: bold;
+}
+
+.card {
+  background: #1e293b;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 12px;
+}
+
+.meta {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 6px;
+}
+
+.time {
+  font-size: 11px;
+  color: #64748b;
+}
+</style>
 </head>
+
 <body>
 
-<h1>留言板</h1>
+<div class="container">
 
-<input id="input">
-<button onclick="addMessage()">
-  新增
-</button>
+<h1>💬 留言板 Pro</h1>
 
-<ul id="list"></ul>
+<div class="input-area">
+  <input id="input" placeholder="輸入留言...">
+  <button onclick="add()">送出</button>
+</div>
+
+<div id="list"></div>
+
+</div>
 
 <script>
 
-const API = 'https://mywebsite-backend-production.up.railway.app'
+const API = "https://你的railway網址"
 
-async function loadMessages() {
-
-  const res = await fetch(`${API}/messages`)
-
+async function load() {
+  const res = await fetch(API + "/messages")
   const data = await res.json()
 
-  const list = document.getElementById('list')
-
-  list.innerHTML = ''
+  const list = document.getElementById("list")
+  list.innerHTML = ""
 
   data.forEach(m => {
-
     list.innerHTML += `
-      <li>${m.text}</li>
+      <div class="card">
+        <div>${m.text}</div>
+
+        <div class="meta">
+          IP: ${m.ip}
+        </div>
+
+        <div class="time">
+          🕒 ${m.created_at}
+        </div>
+      </div>
     `
   })
 }
 
-async function addMessage() {
+async function add() {
+  const input = document.getElementById("input")
 
-  const input = document.getElementById('input')
+  if (!input.value) return
 
-  await fetch(
-    `${API}/messages/${input.value}`,
-    {
-      method: 'POST'
-    }
-  )
+  await fetch(API + "/messages", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ text: input.value })
+  })
 
-  input.value = ''
-
-  loadMessages()
+  input.value = ""
+  load()
 }
 
-loadMessages()
+load()
 
 </script>
 
